@@ -210,7 +210,7 @@ class ScriptGenerator:
     def generate_script(self, topic, keywords='', source='', template='default'):
         """生成单条脚本"""
         if not self.api_key:
-            print("❌ 未配置DeepSeek API Key")
+            print("[失败] 未配置DeepSeek API Key")
             return None
         
         prompt_template = self.prompt_templates.get(template, self.prompt_templates['default'])
@@ -308,19 +308,19 @@ class ScriptGenerator:
     def generate_batch(self, limit=DAILY_GENERATE_LIMIT):
         """批量生成脚本"""
         print(f"\n{'='*50}")
-        print(f"🚀 AI脚本生成机器人启动")
-        print(f"⏰ 当前时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"[启动] AI脚本生成机器人启动")
+        print(f"[时间] 当前时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"{'='*50}\n")
         
         # 1. 获取待处理选题
         if not self.feishu:
-            print("❌ 飞书配置不完整，无法读取选题")
+            print("[失败] 飞书配置不完整，无法读取选题")
             return []
         
         pending_topics = self.feishu.get_pending_topics(limit=limit)
         
         if not pending_topics:
-            print("⚠️ 没有待处理的选题")
+            print("[警告] 没有待处理的选题")
             return []
         
         print(f"📋 获取到 {len(pending_topics)} 个待处理选题\n")
@@ -360,10 +360,10 @@ class ScriptGenerator:
                 success = self.feishu.update_record(topic_info['record_id'], update_fields)
                 
                 if success:
-                    print(f"  ✅ 生成成功并已保存")
+                    print(f"  [成功] 生成成功并已保存")
                     success_count += 1
                 else:
-                    print(f"  ⚠️ 生成成功但保存失败")
+                    print(f"  [警告] 生成成功但保存失败")
                 
                 results.append({
                     'topic': topic_info['title'],
@@ -371,7 +371,7 @@ class ScriptGenerator:
                     'status': 'success'
                 })
             else:
-                print(f"  ❌ 生成失败")
+                print(f"  [失败] 生成失败")
                 results.append({
                     'topic': topic_info['title'],
                     'status': 'failed'
@@ -382,8 +382,8 @@ class ScriptGenerator:
                 time.sleep(2)
         
         print(f"\n{'='*50}")
-        print(f"✅ 批量生成完成")
-        print(f"📊 成功: {success_count}/{len(pending_topics)}")
+        print(f"[成功] 批量生成完成")
+        print(f"[统计] 成功: {success_count}/{len(pending_topics)}")
         print(f"{'='*50}\n")
         
         return results

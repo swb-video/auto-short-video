@@ -179,19 +179,19 @@ class DataMonitor:
         
         report = {
             'date': today,
-            'title': f'📊 AI数字员工日报 - {today}',
+            'title': f'[统计] AI数字员工日报 - {today}',
             'sections': []
         }
         
         # 核心数据概览
-        overview = f"""### 🎯 核心数据概览
+        overview = f"""### [目标] 核心数据概览
 
 | 指标 | 今日数据 | 状态 |
 |------|----------|------|
-| 脚本生成数 | {content_data.get('today_generated', 0)} 条 | {'✅' if content_data.get('today_generated', 0) > 0 else '⚠️'} |
-| 待审核选题 | {content_data.get('today_pending', 0)} 条 | {'✅' if content_data.get('today_pending', 0) < 10 else '⚠️'} |
-| 累计发布 | {content_data.get('total_published', 0)} 条 | ✅ |
-| 选题库总量 | {content_data.get('total_topics', 0)} 条 | ✅ |
+| 脚本生成数 | {content_data.get('today_generated', 0)} 条 | {'[成功]' if content_data.get('today_generated', 0) > 0 else '[警告]'} |
+| 待审核选题 | {content_data.get('today_pending', 0)} 条 | {'[成功]' if content_data.get('today_pending', 0) < 10 else '[警告]'} |
+| 累计发布 | {content_data.get('total_published', 0)} 条 | [成功] |
+| 选题库总量 | {content_data.get('total_topics', 0)} 条 | [成功] |
 """
         report['sections'].append(overview)
         
@@ -199,12 +199,12 @@ class DataMonitor:
         ai_report = f"""### 🤖 AI员工工作汇报
 
 **内容生产组**
-- ✅ 热点抓取员：已抓取今日热点
-- ✅ 脚本生成员：生成 {content_data.get('today_generated', 0)} 条脚本
+- [成功] 热点抓取员：已抓取今日热点
+- [成功] 脚本生成员：生成 {content_data.get('today_generated', 0)} 条脚本
 - ⏳ 待人工审核：{content_data.get('today_pending', 0)} 条
 
 **运营推广组**
-- ✅ 数据监控员：日报已生成
+- [成功] 数据监控员：日报已生成
 - ⏳ 发布专员：等待视频制作完成
 
 **变现转化组**
@@ -215,9 +215,9 @@ class DataMonitor:
         
         # 异常预警
         if alerts:
-            alert_section = "### ⚠️ 异常预警\n\n"
+            alert_section = "### [警告] 异常预警\n\n"
             for alert in alerts:
-                emoji = '🔴' if alert['level'] == 'error' else '🟡'
+                emoji = '[红]' if alert['level'] == 'error' else '[黄]'
                 alert_section += f"{emoji} **{alert['message']}**\n\n"
             report['sections'].append(alert_section)
         
@@ -228,7 +228,7 @@ class DataMonitor:
 2. **下午**：使用AI工具制作视频（剪映/一帧秒创）
 3. **晚上**：发布视频到各平台，监控数据表现
 
-### 💡 系统建议
+### [提示] 系统建议
 
 - 建议保持每日5-10条脚本生成节奏
 - 待审核选题超过10条时，可增加生成配额
@@ -241,7 +241,7 @@ class DataMonitor:
     def send_report(self, report):
         """发送日报"""
         if not FEISHU_WEBHOOK:
-            print("⚠️ 未配置飞书Webhook，打印日报到控制台：")
+            print("[警告] 未配置飞书Webhook，打印日报到控制台：")
             print("\n" + "="*60)
             print(report['title'])
             print("="*60)
@@ -281,17 +281,17 @@ class DataMonitor:
             result = response.json()
             
             if result.get('code') == 0:
-                print(f"✅ 日报发送成功")
+                print(f"[成功] 日报发送成功")
             else:
-                print(f"❌ 日报发送失败: {result}")
+                print(f"[失败] 日报发送失败: {result}")
         except Exception as e:
-            print(f"❌ 发送异常: {e}")
+            print(f"[失败] 发送异常: {e}")
     
     def run(self):
         """运行完整流程"""
         print(f"\n{'='*50}")
-        print(f"📊 数据监控日报系统启动")
-        print(f"⏰ 当前时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"[统计] 数据监控日报系统启动")
+        print(f"[时间] 当前时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"{'='*50}\n")
         
         # 1. 收集数据
@@ -304,7 +304,7 @@ class DataMonitor:
         self.send_report(report)
         
         print(f"\n{'='*50}")
-        print(f"✅ 日报任务完成")
+        print(f"[成功] 日报任务完成")
         print(f"{'='*50}\n")
         
         return report

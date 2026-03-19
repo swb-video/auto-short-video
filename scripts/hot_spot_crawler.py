@@ -137,12 +137,12 @@ class HotSpotCrawler:
                         'rank': i + 1
                     })
                 
-                print(f"✅ 抖音热榜抓取成功: {len(hotspots)} 条")
+                print(f"[成功] 抖音热榜抓取成功: {len(hotspots)} 条")
             else:
-                print(f"❌ 抖音热榜抓取失败: HTTP {response.status_code}")
+                print(f"[失败] 抖音热榜抓取失败: HTTP {response.status_code}")
                 
         except Exception as e:
-            print(f"❌ 抖音热榜抓取异常: {e}")
+            print(f"[失败] 抖音热榜抓取异常: {e}")
         
         return hotspots
     
@@ -172,12 +172,12 @@ class HotSpotCrawler:
                         'rank': i + 1
                     })
                 
-                print(f"✅ 微博热搜抓取成功: {len(hotspots)} 条")
+                print(f"[成功] 微博热搜抓取成功: {len(hotspots)} 条")
             else:
-                print(f"❌ 微博热搜抓取失败: HTTP {response.status_code}")
+                print(f"[失败] 微博热搜抓取失败: HTTP {response.status_code}")
                 
         except Exception as e:
-            print(f"❌ 微博热搜抓取异常: {e}")
+            print(f"[失败] 微博热搜抓取异常: {e}")
         
         return hotspots
     
@@ -213,12 +213,12 @@ class HotSpotCrawler:
                         'rank': i + 1
                     })
                 
-                print(f"✅ 知乎热榜抓取成功: {len(hotspots)} 条")
+                print(f"[成功] 知乎热榜抓取成功: {len(hotspots)} 条")
             else:
-                print(f"❌ 知乎热榜抓取失败: HTTP {response.status_code}")
+                print(f"[失败] 知乎热榜抓取失败: HTTP {response.status_code}")
                 
         except Exception as e:
-            print(f"❌ 知乎热榜抓取异常: {e}")
+            print(f"[失败] 知乎热榜抓取异常: {e}")
         
         return hotspots
     
@@ -243,13 +243,13 @@ class HotSpotCrawler:
         # 按匹配分数和热度值排序
         matched.sort(key=lambda x: (x.get('match_score', 0), x.get('hot_value', 0)), reverse=True)
         
-        print(f"✅ 筛选完成: 从 {len(hotspots)} 条中匹配到 {len(matched)} 条")
+        print(f"[成功] 筛选完成: 从 {len(hotspots)} 条中匹配到 {len(matched)} 条")
         return matched
     
     def save_to_feishu(self, hotspots):
         """保存到飞书表格"""
         if not self.feishu or not FEISHU_APP_TOKEN or not FEISHU_TABLE_ID:
-            print("⚠️ 飞书配置不完整，跳过保存到飞书")
+            print("[警告] 飞书配置不完整，跳过保存到飞书")
             # 保存到本地JSON作为备份
             self._save_to_local(hotspots)
             return False
@@ -264,15 +264,15 @@ class HotSpotCrawler:
             )
             
             if success:
-                print(f"✅ 成功保存 {len(hotspots)} 条记录到飞书")
+                print(f"[成功] 成功保存 {len(hotspots)} 条记录到飞书")
                 return True
             else:
-                print(f"❌ 保存到飞书失败: {result}")
+                print(f"[失败] 保存到飞书失败: {result}")
                 self._save_to_local(hotspots)
                 return False
                 
         except Exception as e:
-            print(f"❌ 保存到飞书异常: {e}")
+            print(f"[失败] 保存到飞书异常: {e}")
             self._save_to_local(hotspots)
             return False
     
@@ -285,14 +285,14 @@ class HotSpotCrawler:
                 json.dump(hotspots, f, ensure_ascii=False, indent=2)
             print(f"💾 已保存到本地文件: {filename}")
         except Exception as e:
-            print(f"❌ 保存到本地失败: {e}")
+            print(f"[失败] 保存到本地失败: {e}")
     
     def send_notification(self, hotspots):
         """发送通知"""
         if not WEBHOOK_URL:
             return
         
-        message = f"""## 🔥 热点抓取完成
+        message = f"""## [热点] 热点抓取完成
 
 **抓取时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 **匹配热点数**: {len(hotspots)} 条
@@ -307,7 +307,7 @@ class HotSpotCrawler:
                 'msg_type': 'interactive',
                 'card': {
                     'header': {
-                        'title': {'tag': 'plain_text', 'content': '🔥 热点抓取完成'},
+                        'title': {'tag': 'plain_text', 'content': '[热点] 热点抓取完成'},
                         'template': 'blue'
                     },
                     'elements': [{'tag': 'div', 'text': {'tag': 'lark_md', 'content': message}}]
@@ -319,8 +319,8 @@ class HotSpotCrawler:
     def run(self):
         """运行完整流程"""
         print(f"\n{'='*50}")
-        print(f"🚀 热点抓取机器人启动")
-        print(f"⏰ 当前时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"[启动] 热点抓取机器人启动")
+        print(f"[时间] 当前时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"{'='*50}\n")
         
         # 1. 抓取各平台热点
@@ -334,7 +334,7 @@ class HotSpotCrawler:
         
         all_hotspots.extend(self.fetch_zhihu_hot())
         
-        print(f"\n📊 总计抓取: {len(all_hotspots)} 条热点")
+        print(f"\n[统计] 总计抓取: {len(all_hotspots)} 条热点")
         
         # 2. 关键词筛选
         matched_hotspots = self.filter_by_keywords(all_hotspots)
@@ -344,10 +344,10 @@ class HotSpotCrawler:
             self.save_to_feishu(matched_hotspots)
             self.send_notification(matched_hotspots)
         else:
-            print("⚠️ 没有匹配的热点，跳过保存")
+            print("[警告] 没有匹配的热点，跳过保存")
         
         print(f"\n{'='*50}")
-        print(f"✅ 热点抓取完成")
+        print(f"[成功] 热点抓取完成")
         print(f"{'='*50}\n")
         
         return matched_hotspots
