@@ -1,0 +1,33 @@
+==========================================
+手动部署步骤（复制到CMD中执行）
+==========================================
+
+第一步：进入项目目录
+cd /d c:\Users\41337\WorkBuddy\20260319083955
+
+第二步：初始化Git
+git init
+
+第三步：配置Git用户信息
+git config user.name "swb-video"
+git config user.email "deploy@auto-short.video"
+
+第四步：添加所有文件
+git add .
+
+第五步：提交代码
+git commit -m "Initial commit"
+
+第六步：创建main分支
+git branch -M main
+
+第七步：连接GitHub仓库
+git remote add origin https://github.com/swb-video/auto-short-video.git
+
+第八步：推送代码
+git push -u origin main
+
+==========================================
+如果第八步失败，请先在浏览器中登录GitHub
+然后重新执行第八步
+==========================================
