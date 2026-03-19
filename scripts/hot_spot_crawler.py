@@ -55,6 +55,34 @@ class FeishuAPI:
             print(f"获取token失败: {e}")
             return ''
     
+    def get_table_fields(self, app_token, table_id):
+        """获取表格字段信息"""
+        url = f'https://open.feishu.cn/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/fields'
+        headers = {
+            'Authorization': f'Bearer {self.tenant_access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            result = response.json()
+            if result.get('code') == 0:
+                fields = result.get('data', {}).get('items', [])
+                # 创建字段名到字段ID的映射
+                field_map = {}
+                for field in fields:
+                    field_name = field.get('name', '')
+                    field_id = field.get('field_id', '')
+                    field_type = field.get('type', '')
+                    field_map[field_name] = {'id': field_id, 'type': field_type}
+                return field_map
+            else:
+                print(f"[警告] 获取字段信息失败: {result}")
+                return {}
+        except Exception as e:
+            print(f"[警告] 获取字段信息异常: {e}")
+            return {}
+    
     def add_records(self, app_token, table_id, records):
         """批量添加记录"""
         url = f'https://open.feishu.cn/open-apis/bitable/v1/apps/{app_token}/tables/{table_id}/records/batch_create'
@@ -63,7 +91,11 @@ class FeishuAPI:
             'Content-Type': 'application/json'
         }
         
-        # 构造记录格式
+        # 获取字段映射
+        field_map = self.get_table_fields(app_token, table_id)
+        print(f"[信息] 表格字段: {list(field_map.keys())}")
+        
+        # 构造记录格式 - 使用字段名（飞书API支持字段名）
         formatted_records = []
         for record in records:
             formatted_records.append({
@@ -80,10 +112,12 @@ class FeishuAPI:
             })
         
         data = {'records': formatted_records}
+        print(f"[信息] 准备保存 {len(formatted_records)} 条记录")
         
         try:
             response = requests.post(url, headers=headers, json=data)
             result = response.json()
+            print(f"[信息] 飞书API响应: {result}")
             if result.get('code') == 0:
                 return True, result
             else:

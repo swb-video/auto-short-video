@@ -64,6 +64,7 @@ class FeishuAPI:
         }
         
         # 查询条件：处理状态为"待审核"
+        # 注意：飞书API查询时，单选字段的值需要用数组格式
         data = {
             'filter': {
                 'conjunction': 'and',
@@ -71,7 +72,7 @@ class FeishuAPI:
                     {
                         'field_name': '处理状态',
                         'operator': 'is',
-                        'value': '待审核'
+                        'value': ['待审核']  # 单选字段需要用数组
                     }
                 ]
             },
