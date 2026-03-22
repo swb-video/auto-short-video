@@ -1,1 +1,1 @@
-web: python ai_payment_service.py
+web: gunicorn payment_webhook_server:app
