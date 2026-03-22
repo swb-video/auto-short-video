@@ -1,1 +1,1 @@
-web: gunicorn payment_webhook_server:app
+web: python payment_webhook_server.py
